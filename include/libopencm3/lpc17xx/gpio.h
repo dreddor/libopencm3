@@ -134,5 +134,8 @@
 
 void gpio_set(u32 gpioport, u32 gpios);
 void gpio_clear(u32 gpioport, u32 gpios); 
+u32 gpio_get(u32 gpioport, u32 gpios);
+void gpio_toggle(u32 gpioport, u32 gpios);
+u32 gpio_port_read(u32 gpioport);
 
 #endif

@@ -26,5 +26,20 @@ void gpio_set(u32 gpioport, u32 gpios)
 
 void gpio_clear(u32 gpioport, u32 gpios)
 {
-        GPIO_CLR(gpioport) = gpios;
+	GPIO_CLR(gpioport) = gpios;
+}
+
+u32 gpio_get(u32 gpioport, u32 gpios)
+{
+	return gpio_port_read(gpioport) & gpios;
+}
+
+void gpio_toggle(u32 gpioport, u32 gpios)
+{
+	GPIO_PIN(gpioport) ^= gpios;
+}
+
+u32 gpio_port_read(u32 gpioport)
+{
+	return GPIO_PIN(gpioport);
 }
