@@ -24,14 +24,16 @@ CC		= $(PREFIX)-gcc
 LD		= $(PREFIX)-gcc
 OBJCOPY		= $(PREFIX)-objcopy
 OBJDUMP		= $(PREFIX)-objdump
+
 # Uncomment this line if you want to use the installed (not local) library.
 # TOOLCHAIN_DIR := $(shell dirname `which $(CC)`)/../$(PREFIX)
 TOOLCHAIN_DIR   = ../../../..
-CFLAGS		+= -O0 -g -Wall -Wextra -I$(TOOLCHAIN_DIR)/include -fno-common \
-		   -mcpu=cortex-m3 -mthumb -MD
+CFLAGS		+= -O3 -g -Wall -Wextra -I$(TOOLCHAIN_DIR)/include \
+		   -fno-common -mcpu=cortex-m3 -mthumb -msoft-float -MD
 LDSCRIPT	?= $(BINARY).ld
-LDFLAGS         += -L$(TOOLCHAIN_DIR)/lib -L$(TOOLCHAIN_DIR)/lib/lpc17xx \
-		   -T$(LDSCRIPT) -nostartfiles -Wl,--gc-sections
+LDFLAGS     += -lc -lnosys -L$(TOOLCHAIN_DIR)/lib -L$(TOOLCHAIN_DIR)/lib/lpc17xx \
+		   -T$(LDSCRIPT) -nostartfiles -Wl,--gc-sections \
+		   -mthumb -march=armv7 -mfix-cortex-m3-ldrd -msoft-float
 OBJS		+= $(BINARY).o
 
 OOCD		?= openocd
@@ -77,7 +79,7 @@ flash: $(BINARY).flash
 
 %.elf: $(OBJS) $(LDSCRIPT) $(TOOLCHAIN_DIR)/lib/lpc17xx/libopencm3_lpc17xx.a
 	@#printf "  LD      $(subst $(shell pwd)/,,$(@))\n"
-	$(Q)$(LD) $(LDFLAGS) -o $(*).elf $(OBJS) -lopencm3_lpc17xx
+	$(Q)$(LD) -o $(*).elf $(OBJS) -lopencm3_lpc17xx $(LDFLAGS) 
 
 %.o: %.c Makefile
 	@#printf "  CC      $(subst $(shell pwd)/,,$(@))\n"
