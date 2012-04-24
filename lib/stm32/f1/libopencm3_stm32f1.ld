@@ -40,15 +40,20 @@ SECTIONS
 		. = ALIGN(4);
 	} >rom
 
-	/* exception index - required due to libgcc.a issuing /0 exceptions */
-	__exidx_start = .;
+	/*
+	* Another section used by C++ stuff, appears when using newlib with
+	* 64bit (long long) printf support
+	*/
+	.ARM.extab : {
+		*(.ARM.extab*)
+	} >rom
 	.ARM.exidx : {
-		   *(.ARM.exidx*)
-	} > rom
-	__exidx_end = .;
+		__exidx_start = .;
+		*(.ARM.exidx*)
+		__exidx_end = .;
+	} >rom
 
-
-	_etext = .;
+	. = ORIGIN(ram);
 
 	.data : {
 		_data = .;
@@ -62,11 +67,6 @@ SECTIONS
 		*(COMMON)
 		. = ALIGN(4);
 		_ebss = .;
-	} >ram
-
-	/* exception unwind data - required due to libgcc.a issuing /0 exceptions */
-	.ARM.extab : {
-		*(.ARM.extab*)
 	} >ram
 
 	. = ALIGN(4);
